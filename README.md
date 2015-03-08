@@ -1,4 +1,59 @@
-# JBuilder for PHP [![Build Status](https://travis-ci.org/dakatsuka/JBuilder.png?branch=master)](https://travis-ci.org/dakatsuka/JBuilder)
+# Forked JBuilder for PHP [![Build Status](https://travis-ci.org/kanonji/JBuilder.svg?branch=master)](https://travis-ci.org/kanonji/JBuilder)
+
+This is fork from https://github.com/dakatsuka/JBuilder to add basic partial support for myself.
+
+## Basic Partial
+
+```php
+<?php
+use JBuilder\Common\JSON;
+$json = new JSON([
+    'key' => 'value',
+]);
+$json->list($partial->ary, function($json, $item){
+    $json->id = $item['id'];
+    $json->name = $item['name'];
+    // $json->extra = $item['extra'];
+});
+return $json;
+```
+
+This is partial template named `filter_some_key_in_multi_array.json.php`.
+
+
+```php
+$result = Encoder::encode(function($json) {
+    $ary = [
+        ['id' => 1, 'name' => 'item1', 'extra' => 'foo'],
+        ['id' => 2, 'name' => 'item2', 'extra' => 'bar'],
+    ];
+    Partial::$dir = dirname(__FILE__).'/partial';
+    $json->root = Partial::load('filter_some_key_in_multi_array.json.php', ['ary' => $ary]);
+});
+```
+
+This will build the following structure:
+
+```json
+{
+  "root":{
+    "key":"value",
+    "list":[
+      {
+        "id":1,
+        "name":"item1"
+      },
+      {
+        "id":2,
+        "name":"item2"
+      }
+    ]
+  }
+}
+```
+
+
+## Original README hereunder
 
 This is a library for creating the structure of the JSON for PHP.
 
